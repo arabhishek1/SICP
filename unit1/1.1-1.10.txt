@@ -76,5 +76,77 @@ Then he evaluates the expression
 	Normal order:
 		Here arguments will not be evaluated until it is required ,hence test will be called which will return 0 ,hence p will remain uncalled.
 
+Ex 1.6
+	(define (sqrt-iter guess x)
+		(new-if (good-enough? guess x)
+				guess
+				(sqrt-iter (improve guess x)
+							x)))
+		Since its not a special form and in lisp by default its application order evaluation ,the above procedure 
+	results	in an infinite recursion
 
+Ex 1.7
+		The good-enough? test used in computing square roots will not be very effective for
+	finding the square roots of very small numbers. Also, in real computers, arithmetic operations are almost
+	always performed with limited precision. This makes our test inadequate for very large numbers. Explain
+	these statements, with examples showing how the test fails for small and large numbers. An alternative
+	strategy for implementing good-enough? is to watch how guess changes from one iteration to the
+	next and to stop when the change is a very small fraction of the guess. Design a square-root procedure that
+	uses this kind of end test. Does this work better for small and large numbers?
+			Since 0.001 is the tolerance limit,it'll definitely be very large limit for small no less than 0.001 and
+		itself which results in incorrect calculation.
+			For very large no as well the absolute tolerance limit doesnt work out since calculation of guess for those 
+		might lead to never ending loops
 
+			(define (new_good_enough? guess x) 
+				(< abs( (- (improve guess x) guess ) ) (* guess 0.001))   
+										
+Ex 1.8
+		Newtons Cube root method 
+		(define (cal_square x) (* x x))
+
+		 (define (cube_roots_iter guess prev_guess input) 
+   				(if (good_enough? guess prev_guess) 
+       			guess 
+       			(cube_roots_iter (improve guess input) guess input))) 
+  
+ 		(define (good_enough? guess prev_guess input) 
+   				(> 0.001 (/ (abs (- guess prev_guess)) 
+               		input))) 
+  
+ 		(define (improve guess input) 
+   		(/ (+ (/ input (cal_square guess)) 
+      	(* 2 guess)) 
+    	3)) 
+			
+		(define (cube_root x)
+			(cube_roots_iter (improve 1 x) 1 x))
+
+Ex 1.9
+		(define (+ a b)
+			(if (= a 0)
+				b
+				(inc (+ (dec a) b))))
+
+		(define (+ a b)
+			(if (= a 0)
+				b
+				(+ (dec a) (inc b))))
+		first one recursive ,second one iterative
+
+Ex 1.10
+		(define (A x y)
+			(cond ((= y 0) 0)
+				((= x 0) (* 2 y))
+				((= y 1) 2)
+				(else (A (- x 1)
+						(A x (- y 1))))))
+
+		(A 1 10)
+			1024
+		
+		(A 2 4)
+			65,536
+
+		(A 3 3)
+			65,536
