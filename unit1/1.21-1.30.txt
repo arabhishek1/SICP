@@ -1,0 +1,197 @@
+Ex 1.21
+	 smallest-divisor 199 
+	 =>199 
+	 smallest-divisor 1999 
+	 =>1999 
+	 smallest-divisor 19999 
+	 =>7 
+
+Ex 1.22
+
+(define (timed-prime-test n)
+  (start-prime-test n (runtime)))
+
+(define (report-prime n elapsed-time)
+  (newline)
+  (display n)
+  (display " *** ")
+  (display elapsed-time)
+  true)
+
+(define (start-prime-test n start-time)
+  (if (prime? n)
+      (report-prime n (- (runtime) start-time))
+      false))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+(define (search-for-primes n)
+  (define (even? n)
+    (= (remainder n 2) 0))
+  (define (iter n counter)
+    (if (< counter 3)
+        (if (timed-prime-test n) 
+            (iter (+ n 2) (+ counter 1))
+            (iter (+ n 2) counter))))
+  (if (even? n) 
+      (iter (+ n 1) 0)
+      (iter (+ n 2) 0)))
+
+
+Ex 1.23
+
+(define (timed-prime-test n)
+  (start-prime-test n (runtime)))
+
+(define (report-prime n elapsed-time)
+  (newline)
+  (display n)
+  (display " *** ")
+  (display elapsed-time)
+  true)
+
+(define (start-prime-test n start-time)
+  (if (prime? n)
+      (report-prime n (- (runtime) start-time))
+      false))
+
+(define (prime? n)
+  (= n (smallest-divisor n)))
+
+(define (smallest-divisor n)
+  (find-divisor n 2))
+
+(define (find-divisor n test-divisor)
+  (define (next m)
+    (if (= m 2)
+        3
+        (+ m 2)))
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (next test-divisor)))))
+
+(define (divides? a b)
+  (= (remainder b a) 0))
+
+(define (search-for-primes n)
+  (define (even? n)
+    (= (remainder n 2) 0))
+  (define (iter n counter)
+    (if (< counter 3)
+        (if (timed-prime-test n) 
+            (iter (+ n 2) (+ counter 1))
+            (iter (+ n 2) counter))))
+  (if (even? n) 
+      (iter (+ n 1) 0)
+      (iter (+ n 2) 0)))
+
+Ex 1.24
+
+(define (timed-prime-test n)
+  (start-prime-test n (runtime)))
+
+(define (report-prime n elapsed-time)
+  (newline)
+  (display n)
+  (display " *** ")
+  (display elapsed-time)
+  true)
+
+(define test-times 1000)
+
+(define (start-prime-test n start-time)
+  (if (fast-prime? n test-times)
+      (report-prime n (- (runtime) start-time))
+      false))
+
+(define (fast-prime? n times)
+  (cond ((= times 0) true)
+        ((fermat-test n) (fast-prime? n (- times 1)))
+        (else false)))
+
+(define (fermat-test n)
+  (define (try-it a)
+    (= (expmod a n n) a))
+  (try-it (+ 1 (random (- n 1)))))
+
+(define (expmod base exp m)
+  (cond ((= exp 0) 1)
+        ((even? exp)
+         (remainder (square (expmod base (/ exp 2) m))
+                    m))
+        (else
+         (remainder (* base (expmod base (- exp 1) m))
+                    m))))
+
+Ex 1.25
+
+The modified version of expmod computes huge intermediate results.
+Scheme is able to handle arbitrary-precision arithmetic, but arithmetic with arbitrarily long numbers is computationally expensive. This means that we get the same (correct) results, but it takes considerably longer.
+
+Ex 1.26
+Instead of a linear recursion, the rewritten expmod generates a tree recursion, whose execution time grows exponentially with the depth of the tree, which is the logarithm of N. Therefore, the execution time is linear with N
+
+Ex 1.27
+
+(define (carmichael? n)
+  (define (expmod base exp m)
+    (cond ((= exp 0) 1)
+          ((even? exp)
+           (remainder (square (expmod base (/ exp 2) m))
+                      m))
+          (else
+           (remainder (* base (expmod base (- exp 1) m))
+                      m))))        
+  (define (fermat-test n a)
+    (= (expmod a n n) a))
+  (define (iter n i)
+    (cond ((= i n) true)
+          ((fermat-test n i) (iter n (+ i 1)))
+          (else false)))
+  (iter n 2))
+
+
+
+Ex 1.28
+
+(define (miller-rabin-test n)
+  (define (expmod base exp m)
+    (cond ((= exp 0) 1)
+          ((even? exp)
+           (remainder 
+            (square 
+             (trivial-test (expmod base (/ exp 2) m) m))
+            m))
+          (else
+           (remainder (* base (expmod base (- exp 1) m))
+                      m))))        
+  (define (trivial-test r m)
+    (if (or (= r 1) (= r (- m 1)))
+        r
+        (if (= (remainder (square r) m) 1) 
+            0
+            r)))
+  (define (try-it a)
+    (= (expmod a (- n 1) n) 1))
+  (try-it (+ 1 (random (- n 1)))))
+
+(define (do-miller-rabin-test n times)
+  (cond ((= times 0) true)
+        ((miller-rabin-test n) 
+         (do-miller-rabin-test n (- times 1)))
+        (else false)))
+
+
+
