@@ -5,7 +5,7 @@ Ex 1.11
 			(def (fn n)
 				(if (< n 3))
 					n
-					(+ (fn n-1) (* 2 (fn n-2)) (* 3 (fn n-3))))
+					(+ (fn (- n 1) (* 2 (fn (- n 2)) (* 3 (fn (- n 3))))
 
 		Iterative process:
 			(define (fn n) 
@@ -72,12 +72,12 @@ Ex 1.17
   
  	(define (* a b) 
 	   	(cond ((= b 0) 0) 
-	        ((even? b) (double (* a (halve b)))) 
+	        ((even? b) (* (double a) (halve b))) 
 	        (else (+ a (* a (- b 1)))))) 
 
 Ex 1.18
 	(define (double x) (+ x x)) 
-	(define (halve x) (floor (/ x 2))) 
+	(define (halve x) ((/ x 2))) 
   
  	(define (* a b) 
    		(define (iter accumulator a b) 
